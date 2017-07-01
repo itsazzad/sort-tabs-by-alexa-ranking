@@ -11,7 +11,8 @@
   "background": {
     "scripts": [
       "scripts/background.js"
-    ]
+    ],
+    "persistent": false
   },
   "permissions": [
     "tabs",
@@ -41,7 +42,6 @@
       "38": "icons/icon-38.png"
     },
     "default_title": "Sort browser tabs by alexa ranking",
+    "default_popup": "popup.html"
   }
 }
-
-
