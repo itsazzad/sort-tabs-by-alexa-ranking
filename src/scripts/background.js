@@ -3,29 +3,8 @@ import storage from "./utils/storage";
 
 var status = '';
 
-// ext.tabs.query({active: true, currentWindow: true}, function(tabs) {
-//   console.log(tabs);
-// });
-//
-// ext.browserAction.onClicked.addListener(function(tab) {
-//   ext.windows.getCurrent(function(window) {
-//     console.log(window);
-//     var tabIds = [];
-//     // window.tabs.forEach(function(tab){
-//     //   //get alexa info if the latest info not available
-//     //
-//     //   console.log(tab);
-//     //   tabIds.push(tab.id);
-//     // });
-//     //
-//     // //Sort the tabs here by id
-//     //
-//     // ext.tabs.move(tabIds, function(tabs){
-//     //
-//     // });
-//   });
-// });
-function Alexa(url, callback) {
+//TODO: Need to have facility for getting list of Alexa data instead of single one
+function Alexa(tab, url, callback) {
   var data = {
     url: url,
     popularity: null,
@@ -35,7 +14,7 @@ function Alexa(url, callback) {
   storage.get(url, function (sd) {
     if (sd[url] && sd[url].popularity && (Date.now() - sd[url].updated_at) < 86400000) {
       console.info(url, 'Reading from storage');
-      callback(sd[url]);
+      callback(tab, sd[url]);
     } else {
       setLocalData();
     }
@@ -49,9 +28,8 @@ function Alexa(url, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", 'https://data.alexa.com/data?cli=10&url=' + url, true);
     xhr.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        var popularity = parsePopularity(this);
-        data.popularity = popularity;
+      if (this.readyState === 4 && this.status === 200) {
+        data.popularity = parsePopularity(this);
         data.updated_at = Date.now();
         var items = {};
         items[url] = data;
@@ -59,7 +37,7 @@ function Alexa(url, callback) {
           console.info(url, 'data updated');
         });
 
-        callback(data);
+        callback(tab, data);
       }
     };
     xhr.send();
@@ -68,7 +46,9 @@ function Alexa(url, callback) {
   function parsePopularity(xml) {
     var xmlDoc = xml.responseXML;
     try {
-      return xmlDoc.getElementsByTagName("SD")[0].getElementsByTagName("POPULARITY")[0].getAttribute('TEXT');
+      return parseInt(
+        xmlDoc.getElementsByTagName("SD")[0].getElementsByTagName("POPULARITY")[0].getAttribute('TEXT')
+      );
     } catch (e) {
       console.error(url);
       console.error(e);
@@ -78,15 +58,31 @@ function Alexa(url, callback) {
 }
 
 ext.browserAction.onClicked.addListener(function () {
-  chrome.tabs.query({}, function (tabs) {
-    var tabIds = [];
+  ext.tabs.query({currentWindow: true}, function (tabs) {
+    var tabData = [];
     for (var i = 0, tab; tab = tabs[i]; i++) {
-      var currenTab = tab;
-      new Alexa((new URL(tab.url)).hostname, function (data) {
-        data.tabId = currenTab.id;
-        tabIds.push(data);
+      // console.log(tab);
+      new Alexa(tab, (new URL(tab.url)).hostname, function (currentTab, data) {
+        if (data.popularity) {
+          data.tabId = currentTab.id;
+          tabData.push(data);
+          tabData.sort(function (a, b) {
+            return a.popularity - b.popularity;
+          });
+          var tabIds = tabData.map(function (obj) {
+            return obj.tabId;
+          });
+
+          //TODO: Need to move a single tab instead of array of tabs
+          ext.tabs.move(tabIds, {index: -1}, function (tabs) {
+            // console.log(tabs);
+          });
+        }
       });
     }
-    console.log(tabIds);
   });
+});
+
+ext.tabs.onMoved.addListener(function (tabId, moveInfo) {
+  console.info(tabId, moveInfo);
 });
