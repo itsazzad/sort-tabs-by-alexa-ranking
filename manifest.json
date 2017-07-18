@@ -1,6 +1,6 @@
 {
-  "name": "sort-tabs-by-alexa-ranking",
-  "version": "0.0.1",
+  "name": "Sort tabs by alexa ranking",
+  "version": "0.0.3",
   "manifest_version": 2,
   "description": "Sort browser tabs by alexa ranking",
   "icons": {
@@ -17,8 +17,8 @@
   "permissions": [
     "tabs",
     "storage",
-    "http://*/*",
-    "https://*/*"
+    "http://*.alexa.com/",
+    "https://*.alexa.com/"
   ],
   "options_ui": {
     "page": "options.html"
@@ -41,7 +41,6 @@
       "19": "icons/icon-19.png",
       "38": "icons/icon-38.png"
     },
-    "default_title": "Sort browser tabs by alexa ranking",
-    "default_popup": "popup.html"
+    "default_title": "Sort browser tabs by alexa ranking"
   }
 }

@@ -3,7 +3,7 @@
     Sort browser tabs by alexa ranking  
   </h1>
   <p>
-    <strong>Developing for Chrome, Opera & Firefox.</strong>
+    <strong>Developing for Chrome only but may work on Opera & Firefox as well.</strong>
   </p>
 </div>
 
