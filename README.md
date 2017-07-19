@@ -36,4 +36,4 @@ The following tasks can be used when you want to start developing the extension 
 Run `npm run dist` to create a zipped, production-ready extension for each browser. You can then upload that to the appstore.
 
 
-[**Started from the template for building cross browser extensions for Chrome, Opera, Firefox.**](https://github.com/itsazzad/sort-tabs-by-alexa-ranking)
+[**Started from the template for building cross browser extensions for Chrome, Opera, Firefox.**](https://github.com/EmailThis/extension-boilerplate)
