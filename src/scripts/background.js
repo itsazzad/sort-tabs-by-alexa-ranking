@@ -7,7 +7,7 @@ var status = '';
 function Alexa(tab, url, callback) {
   var data = {
     url: url,
-    popularity: null,
+    popularity: Infinity,
     updated_at: Date.now(),
   };
 
